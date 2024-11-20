@@ -16,8 +16,8 @@ export interface IEmployee extends Document {
 const employeeSchema = new Schema({
   userId: { type: String, required: true },
   companyId: { type: String, required: true },
-  roleId: { type: Schema.Types.ObjectId, ref: 'Role', required: true },
-  managerId: { type: Schema.Types.ObjectId, ref: 'Employee' },
+  roleId: { type: String, required: true },
+  managerId: { type: String },
   status: { 
     type: String, 
     enum: ['active', 'under_review', 'hold', 'terminated'],
