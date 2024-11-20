@@ -8,6 +8,8 @@ import {
 
 export const createEmployee = asyncHandler(
   async (req: Request, res: Response) => {
+    // console.log(req.body);
+    // console.log(req.user);
     const validatedData = createEmployeeSchema.parse(req.body);
     if (!req.user || !req.user.userId) {
       res.status(403);
@@ -18,6 +20,7 @@ export const createEmployee = asyncHandler(
       ...validatedData,
       companyId: req.user.userId,
     };
+    console.log(employeeData)
     const employee = await Employee.create(employeeData);
     res.status(201).json(employee);
   }

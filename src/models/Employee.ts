@@ -15,7 +15,6 @@ export interface IEmployee extends Document {
 
 const employeeSchema = new Schema(
   {
-    userId: { type: String, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     companyId: { type: String, required: true },
