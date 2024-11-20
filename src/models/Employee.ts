@@ -1,11 +1,11 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IEmployee extends Document {
   userId: string;
   companyId: string;
   roleId: string;
   managerId?: string;
-  status: 'active' | 'under_review' | 'hold' | 'terminated';
+  status: "active" | "under_review" | "hold" | "terminated";
   department: string;
   position: string;
   joinDate: Date;
@@ -13,19 +13,24 @@ export interface IEmployee extends Document {
   updatedAt: Date;
 }
 
-const employeeSchema = new Schema({
-  userId: { type: String, required: true },
-  companyId: { type: String, required: true },
-  roleId: { type: String, required: true },
-  managerId: { type: String },
-  status: { 
-    type: String, 
-    enum: ['active', 'under_review', 'hold', 'terminated'],
-    default: 'active'
+const employeeSchema = new Schema(
+  {
+    userId: { type: String, required: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    companyId: { type: String, required: true },
+    roleId: { type: String, required: true },
+    managerId: { type: String },
+    status: {
+      type: String,
+      enum: ["active", "under_review", "hold", "terminated"],
+      default: "active",
+    },
+    department: { type: String, required: true },
+    position: { type: String, required: true },
+    joinDate: { type: Date, required: true },
   },
-  department: { type: String, required: true },
-  position: { type: String, required: true },
-  joinDate: { type: Date, required: true },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-export const Employee = mongoose.model<IEmployee>('Employee', employeeSchema);
+export const Employee = mongoose.model<IEmployee>("Employee", employeeSchema);
