@@ -7,7 +7,7 @@ const router = express.Router();
 router.use(auth);
 
 router.post('/', createEmployee);
-router.get('/getEmploye', getEmployees);
+router.get('/getEmployee', getEmployees);
 router.patch('/:id/status', updateEmployeeStatus);
 
 export { router as employeeRoutes };
