@@ -9,5 +9,5 @@ export const createCaseSchema = z.object({
 
 export const addResponseSchema = z.object({
   message: z.string().min(1),
-  attachments: z.array(z.string()).optional()
+  // attachments: z.array(z.string()).optional()
 });

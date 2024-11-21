@@ -26,3 +26,15 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
+
+export const requireAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user || req.user.role !== 'admin') {
+      res.status(403);
+      throw new Error('Admin access required');
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+};

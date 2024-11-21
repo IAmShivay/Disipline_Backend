@@ -7,11 +7,11 @@ export interface ICase extends Document {
   status: 'open' | 'closed' | 'in_progress';
   title: string;
   description: string;
-  attachments: Array<{
+  attachments: {
     url: string;
     uploadedBy: string;
     uploadedAt: Date;
-  }>;
+  }[];
   responses: Array<{
     message: string;
     respondedBy: string;
