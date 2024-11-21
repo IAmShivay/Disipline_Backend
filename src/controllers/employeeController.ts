@@ -30,7 +30,7 @@ export const getEmployees = asyncHandler(
       res.status(403);
       throw new Error("Unauthorized access: Missing user information");
     }
-    const filter: any = { companyId:userId };
+    const filter: any = { companyId: userId };
     const employees = await Employee.find(filter)
       .populate("roleId")
       .populate("managerId");
@@ -48,6 +48,25 @@ export const updateEmployeeStatus = asyncHandler(
       { status },
       { new: true }
     );
+
+    if (!employee) {
+      res.status(404);
+      throw new Error("Employee not found");
+    }
+
+    res.json(employee);
+  }
+);
+
+export const updateEmployee = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const updateData = updateEmployeeSchema.parse(req.body);
+
+    const employee = await Employee.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!employee) {
       res.status(404);
