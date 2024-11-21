@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
 
 declare global {
   namespace Express {
@@ -8,6 +9,7 @@ declare global {
     }
   }
 }
+
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -18,14 +20,23 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
       throw new Error('Authentication required');
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    req.user = decoded;
+    // Verify the JWT locally
+    // const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+
+    // Make an external call to verify token and get user data
+    const verifyResponse = await axios.get('http://localhost:4000/api/auth/verify', { headers: { Authorization: `Bearer ${token}` } });
+
+    // Attach the user data from the external service to req.user
+    req.user = verifyResponse.data;
+
+    // Proceed to the next middleware or route handler
     next();
   } catch (error) {
-    res.status(401);
-    next(error);
+    console.error(error);
+    res.status(401).send({ error: 'Authentication failed' });
   }
 };
+
 
 export const requireAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {

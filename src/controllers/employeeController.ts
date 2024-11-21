@@ -8,30 +8,27 @@ import {
 import { sendMail } from "../mailer/mailer";
 import { newEmployeeTemplate } from "../mailer/template";
 
-export const createEmployee = asyncHandler(
-  async (req: Request, res: Response) => {
-    const validatedData = createEmployeeSchema.parse(req.body);
-    if (!req.user || !req.user.userId) {
-      res.status(403);
-      throw new Error("Unauthorized access: Missing user information");
-    }
-
-    const employeeData = {
-      ...validatedData,
-      companyId: req.user.userId,
-    };
-    const employee = await Employee.create(employeeData);
-    await sendMail(
-      employee.email,
-      "Welcome to Our Company",
-      newEmployeeTemplate(employee)
-    );
-    res.status(201).json(employee);
+export const createEmployee = asyncHandler(async (req: any, res: Response) => {
+  const validatedData = createEmployeeSchema.parse(req.body);
+  if (!req.user) {
+    res.status(403);
+    throw new Error("Unauthorized access: Missing user information");
   }
-);
+  const employeeData = {
+    ...validatedData,
+    companyId: req.user.companyId,
+  };
+  const employee = await Employee.create(employeeData);
+  await sendMail(
+    employee.email,
+    "Welcome to Our Company",
+    newEmployeeTemplate(employee)
+  );
+  res.status(201).json(employee);
+});
 export const getEmployees = asyncHandler(
   async (req: Request, res: Response) => {
-    const userId = req.user?.userId;
+    const userId = req.user.companyId;
     if (!userId) {
       res.status(403);
       throw new Error("Unauthorized access: Missing user information");
