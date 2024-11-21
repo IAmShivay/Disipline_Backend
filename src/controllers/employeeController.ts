@@ -9,6 +9,7 @@ import {
 export const createEmployee = asyncHandler(
   async (req: Request, res: Response) => {
     const validatedData = createEmployeeSchema.parse(req.body);
+    console.log("validatedData", validatedData);
     if (!req.user || !req.user.userId) {
       res.status(403);
       throw new Error("Unauthorized access: Missing user information");
