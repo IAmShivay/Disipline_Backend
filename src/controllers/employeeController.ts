@@ -24,7 +24,6 @@ export const createEmployee = asyncHandler(
 );
 export const getEmployees = asyncHandler(
   async (req: Request, res: Response) => {
-    console.log("req.user", req.user);
     const userId = req.user?.userId;
     if (!userId) {
       res.status(403);
