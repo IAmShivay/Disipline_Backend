@@ -24,9 +24,14 @@ export const createEmployee = asyncHandler(
 );
 export const getEmployees = asyncHandler(
   async (req: Request, res: Response) => {
-    const { companyId, department } = req.query;
-    const filter: any = { companyId };
-    if (department) filter.department = department;
+    const userId = req.user?.userId;
+    if (!userId) {
+      res.status(403);
+      throw new Error("Unauthorized access: Missing user information");
+    }
+    // const { companyId, department } = req.query;
+    const filter: any = { companyId:userId };
+        // if (department) filter.department = department;
 
     const employees = await Employee.find(filter)
       .populate("roleId")
