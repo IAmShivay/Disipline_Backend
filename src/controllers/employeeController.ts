@@ -76,3 +76,17 @@ export const updateEmployee = asyncHandler(
     res.json(employee);
   }
 );
+export const deleteEmployee = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const employee = await Employee.findByIdAndDelete(id);
+
+    if (!employee) {
+      res.status(404);
+      throw new Error("Employee not found");
+    }
+
+    res.json({ message: "Employee deleted successfully" });
+  }
+);
