@@ -135,26 +135,37 @@ export const getCaseById = async (
   }
 };
 
-export const updateCase = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const { id } = req.params;
-    const updatedCase = await Case.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
-    if (!updatedCase) {
-      res.status(404).json({ success: false, message: "Case not found" });
-      return;
-    }
-    res.status(200).json({ success: true, data: updatedCase });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Error updating case", error });
+export const updateCase = asyncHandler(async (req: Request, res: Response) => {
+  console.log("Request body:", req.body);
+  console.log("Files:", req.files);
+
+  const { id } = req.params;
+  const { userId } = req.user;
+  const files = req.files as Express.Multer.File[];
+  const attachments = await Promise.all(
+    files.map(async (file) => ({
+      url: await uploadFile(file),
+      uploadedBy: userId,
+      uploadedAt: new Date(),
+    }))
+  );
+  const updateData = {
+    ...req.body,
+    employeeId: userId,
+    createdBy: userId,
+    attachments,
+  };
+  const updatedCase = await Case.findByIdAndUpdate(id, updateData, {
+    new: true,
+  });
+
+  if (!updatedCase) {
+    res.status(404).json({ success: false, message: "Case not found" });
+    return;
   }
-};
+
+  res.status(200).json({ success: true, data: updatedCase });
+});
 
 export const deleteCase = async (
   req: Request,

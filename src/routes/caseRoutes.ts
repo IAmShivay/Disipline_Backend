@@ -39,7 +39,7 @@ router.get("/employee/:employeeId/:role", getCasesByEmployeeAndRole);
 router.get("caseId/:id", getCaseById);
 
 // Route for updating a specific case by its ID
-router.put("/update/:id", updateCase);
+router.put("/update/:id",upload.array("attachments"), updateCase);
 
 // Route for deleting a specific case by its ID
 router.delete("/delete/:id", deleteCase);
