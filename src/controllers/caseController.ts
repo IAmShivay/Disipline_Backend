@@ -30,7 +30,6 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
   };
   const newCase = await Case.create(caseData);
 
-  // Populate the employee and createdBy fields
   await newCase.populate("employeeId");
   await newCase.populate("createdBy");
 
@@ -69,8 +68,6 @@ export const addResponse = asyncHandler(async (req: Request, res: Response) => {
   res.json(updatedCase);
 });
 
-
-
 // Get all cases
 
 export const getCases = asyncHandler(async (req: Request, res: Response) => {
@@ -89,64 +86,93 @@ export const getCases = asyncHandler(async (req: Request, res: Response) => {
   res.json(cases);
 });
 
-export const getAllCasesByCompany = async (req: Request, res: Response): Promise<void> => {
+export const getAllCasesByCompany = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { companyId } = req.params;
     const cases = await Case.find({ companyId });
     res.status(200).json({ success: true, data: cases });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error fetching cases', error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching cases", error });
   }
 };
 
-export const getCasesByEmployeeAndRole = async (req: Request, res: Response): Promise<void> => {
+export const getCasesByEmployeeAndRole = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { employeeId, role } = req.params;
     const cases = await Case.find({ employeeId, role });
     res.status(200).json({ success: true, data: cases });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error fetching cases', error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching cases", error });
   }
 };
 
-export const getCaseById = async (req: Request, res: Response): Promise<void> => {
+export const getCaseById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
-    const caseItem = await Case.findById(id).populate('comments');
+    const caseItem = await Case.findById(id).populate("comments");
     if (!caseItem) {
-      res.status(404).json({ success: false, message: 'Case not found' });
+      res.status(404).json({ success: false, message: "Case not found" });
       return;
     }
     res.status(200).json({ success: true, data: caseItem });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error fetching case', error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching case", error });
   }
 };
 
-export const updateCase = async (req: Request, res: Response): Promise<void> => {
+export const updateCase = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
-    const updatedCase = await Case.findByIdAndUpdate(id, req.body, { new: true });
+    const updatedCase = await Case.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
     if (!updatedCase) {
-      res.status(404).json({ success: false, message: 'Case not found' });
+      res.status(404).json({ success: false, message: "Case not found" });
       return;
     }
     res.status(200).json({ success: true, data: updatedCase });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error updating case', error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error updating case", error });
   }
 };
 
-export const deleteCase = async (req: Request, res: Response): Promise<void> => {
+export const deleteCase = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
     const deletedCase = await Case.findByIdAndDelete(id);
     if (!deletedCase) {
-      res.status(404).json({ success: false, message: 'Case not found' });
+      res.status(404).json({ success: false, message: "Case not found" });
       return;
     }
-    res.status(200).json({ success: true, message: 'Case deleted successfully' });
+    res
+      .status(200)
+      .json({ success: true, message: "Case deleted successfully" });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error deleting case', error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error deleting case", error });
   }
 };
