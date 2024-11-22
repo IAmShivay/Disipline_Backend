@@ -10,6 +10,7 @@ import { uploadFile } from "../utils/fileUpload";
 export const createCase = asyncHandler(async (req: Request, res: Response) => {
   const validatedData = createCaseSchema.parse(req.body);
   const files = req.files as Express.Multer.File[];
+  console.log(req.user);
   const { userId } = req.user;
   const attachments = await Promise.all(
     files.map(async (file) => ({
@@ -34,6 +35,7 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
 
   res.status(201).json(newCase);
 });
+
 export const addResponse = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
   const validatedData = addResponseSchema.parse(req.body);
