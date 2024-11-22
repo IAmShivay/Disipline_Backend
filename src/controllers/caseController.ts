@@ -10,23 +10,22 @@ import { uploadFile } from "../utils/fileUpload";
 export const createCase = asyncHandler(async (req: Request, res: Response) => {
   const validatedData = createCaseSchema.parse(req.body);
   const files = req.files as Express.Multer.File[];
-
+  const { userId } = req.user;
   const attachments = await Promise.all(
     files.map(async (file) => ({
       url: await uploadFile(file),
-      uploadedBy: "673cb07000235024c7e61d73", // Assuming req.user contains the authenticated user
+      uploadedBy: userId,
       uploadedAt: new Date(),
     }))
   );
-
   const caseData = {
     ...validatedData,
-    createdBy: "673cb07000235024c7e61d73", // Assuming req.user contains the authenticated user
+    employeeId: userId,
+    createdBy: userId,
     attachments,
-    status: "open", // Default status
-    responses: [], // Initialize with empty responses
+    status: "open",
+    responses: [],
   };
-
   const newCase = await Case.create(caseData);
 
   // Populate the employee and createdBy fields
