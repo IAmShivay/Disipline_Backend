@@ -26,6 +26,7 @@ export const createEmployee = asyncHandler(async (req: any, res: Response) => {
   );
   res.status(201).json(employee);
 });
+
 export const getEmployees = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user.companyId;

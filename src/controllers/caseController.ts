@@ -7,10 +7,11 @@ import {
 } from "../validators/caseValidator";
 import { uploadFile } from "../utils/fileUpload";
 
+// Create a new Case
+
 export const createCase = asyncHandler(async (req: Request, res: Response) => {
   const validatedData = createCaseSchema.parse(req.body);
   const files = req.files as Express.Multer.File[];
-  console.log(req.user);
   const { userId } = req.user;
   const attachments = await Promise.all(
     files.map(async (file) => ({
@@ -35,6 +36,8 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
 
   res.status(201).json(newCase);
 });
+
+// Add a response to a case
 
 export const addResponse = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -66,6 +69,10 @@ export const addResponse = asyncHandler(async (req: Request, res: Response) => {
   res.json(updatedCase);
 });
 
+
+
+// Get all cases
+
 export const getCases = asyncHandler(async (req: Request, res: Response) => {
   const { employeeId, status, type } = req.query;
   const filter: any = {};
@@ -81,3 +88,65 @@ export const getCases = asyncHandler(async (req: Request, res: Response) => {
 
   res.json(cases);
 });
+
+export const getAllCasesByCompany = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { companyId } = req.params;
+    const cases = await Case.find({ companyId });
+    res.status(200).json({ success: true, data: cases });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error fetching cases', error });
+  }
+};
+
+export const getCasesByEmployeeAndRole = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { employeeId, role } = req.params;
+    const cases = await Case.find({ employeeId, role });
+    res.status(200).json({ success: true, data: cases });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error fetching cases', error });
+  }
+};
+
+export const getCaseById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const caseItem = await Case.findById(id).populate('comments');
+    if (!caseItem) {
+      res.status(404).json({ success: false, message: 'Case not found' });
+      return;
+    }
+    res.status(200).json({ success: true, data: caseItem });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error fetching case', error });
+  }
+};
+
+export const updateCase = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const updatedCase = await Case.findByIdAndUpdate(id, req.body, { new: true });
+    if (!updatedCase) {
+      res.status(404).json({ success: false, message: 'Case not found' });
+      return;
+    }
+    res.status(200).json({ success: true, data: updatedCase });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error updating case', error });
+  }
+};
+
+export const deleteCase = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const deletedCase = await Case.findByIdAndDelete(id);
+    if (!deletedCase) {
+      res.status(404).json({ success: false, message: 'Case not found' });
+      return;
+    }
+    res.status(200).json({ success: true, message: 'Case deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error deleting case', error });
+  }
+};
