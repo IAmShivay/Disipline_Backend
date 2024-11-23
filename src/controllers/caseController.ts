@@ -45,8 +45,9 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
   const newCase: any = await Case.create(caseData);
   await newCase.populate("employeeId");
   await newCase.populate("createdBy");
+  const caseId = newCase._id.toString();
   await addTimelineEvent(
-    newCase._id.toString(),
+    caseId,
     "Case Created",
     "New case was created",
     userId
