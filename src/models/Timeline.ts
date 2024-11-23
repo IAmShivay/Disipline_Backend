@@ -6,6 +6,7 @@ interface ITimelineEvent extends Document {
   timestamp: Date;
   event: string;
   description: string;
+  createdAt: Date;
   userId: mongoose.Types.ObjectId;
 }
 
@@ -14,6 +15,7 @@ const TimelineEventSchema: Schema = new Schema({
   timestamp: { type: Date, default: Date.now },
   event: { type: String, required: true },
   description: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
 });
 

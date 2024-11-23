@@ -11,6 +11,7 @@ import {
   updateCase,
   deleteCase,
 } from "../controllers/caseController";
+import { getTimelineEvents } from "../controllers/Timeline";
 // Importing authentication middleware
 import { auth } from "../middleware/auth";
 
@@ -39,10 +40,14 @@ router.get("/employee/:employeeId/:role", getCasesByEmployeeAndRole);
 router.get("/caseId/:id", getCaseById);
 
 // Route for updating a specific case by its ID
-router.put("/update/:id",upload.array("attachments"), updateCase);
+router.put("/update/:id", upload.array("attachments"), updateCase);
 
 // Route for deleting a specific case by its ID
+
 router.delete("/delete/:id", deleteCase);
+
+// Route for retrieving all timeline events for a specific case
+router.get("/timeline/:id", getTimelineEvents);
 
 // Export the router with all configured routes
 export { router as caseRoutes };
