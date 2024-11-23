@@ -36,7 +36,7 @@ router.get("/company/:companyId", getAllCasesByCompany);
 router.get("/employee/:employeeId/:role", getCasesByEmployeeAndRole);
 
 // Route for retrieving a specific case by its ID
-router.get("caseId/:id", getCaseById);
+router.get("/caseId/:id", getCaseById);
 
 // Route for updating a specific case by its ID
 router.put("/update/:id",upload.array("attachments"), updateCase);

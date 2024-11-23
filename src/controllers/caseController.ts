@@ -122,7 +122,8 @@ export const getCaseById = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const caseItem = await Case.findById(id).populate("comments");
+    console.log(id)
+    const caseItem = await Case.findById(id)
     if (!caseItem) {
       res.status(404).json({ success: false, message: "Case not found" });
       return;
