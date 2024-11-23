@@ -2,10 +2,12 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface ICase extends Document {
   employeeId: string;
+  employeeName: string;
   createdBy: string;
   type: "performance" | "policy_violation" | "review";
   status: "open" | "closed" | "in_progress";
   title: string;
+  incidentDate: Date;
   description: string;
   attachments: {
     url: string;
@@ -24,6 +26,8 @@ export interface ICase extends Document {
 
 const caseSchema = new Schema(
   {
+    incidentDate: { type: Date, required: true },
+    employeeName: { type: String, required: true },
     employeeId: { type: String, required: true },
     createdBy: { type: String, required: true },
     type: {
