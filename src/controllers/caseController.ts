@@ -20,9 +20,9 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
       uploadedAt: new Date(),
     }))
   );
+  console.log(validatedData)
   const caseData = {
     ...validatedData,
-    employeeId: userId,
     createdBy: userId,
     attachments,
     status: "open",
@@ -136,9 +136,6 @@ export const getCaseById = async (
 };
 
 export const updateCase = asyncHandler(async (req: Request, res: Response) => {
-  console.log("Request body:", req.body);
-  console.log("Files:", req.files);
-
   const { id } = req.params;
   const { userId } = req.user;
   const files = req.files as Express.Multer.File[];
@@ -151,7 +148,6 @@ export const updateCase = asyncHandler(async (req: Request, res: Response) => {
   );
   const updateData = {
     ...req.body,
-    employeeId: userId,
     createdBy: userId,
     attachments,
   };
