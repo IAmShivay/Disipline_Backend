@@ -6,9 +6,23 @@ import {
   addResponseSchema,
 } from "../validators/caseValidator";
 import { uploadFile } from "../utils/fileUpload";
-
+import TimelineEvent from "../models/Timeline";
+import mongoose from "mongoose";
 // Create a new Case
-
+const addTimelineEvent = async (
+  caseId: string,
+  event: string,
+  description: string,
+  userId: string
+): Promise<void> => {
+  const timelineEvent = new TimelineEvent({
+    caseId,
+    event,
+    description,
+    userId: new mongoose.Types.ObjectId(userId),
+  });
+  await timelineEvent.save();
+};
 export const createCase = asyncHandler(async (req: Request, res: Response) => {
   const validatedData = createCaseSchema.parse(req.body);
   const files = req.files as Express.Multer.File[];
@@ -20,7 +34,7 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
       uploadedAt: new Date(),
     }))
   );
-  console.log(validatedData)
+  console.log(validatedData);
   const caseData = {
     ...validatedData,
     createdBy: userId,
@@ -28,11 +42,15 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
     status: "open",
     responses: [],
   };
-  const newCase = await Case.create(caseData);
-
+  const newCase: any = await Case.create(caseData);
   await newCase.populate("employeeId");
   await newCase.populate("createdBy");
-
+  await addTimelineEvent(
+    newCase._id.toString(),
+    "Case Created",
+    "New case was created",
+    userId
+  );
   res.status(201).json(newCase);
 });
 
@@ -122,8 +140,8 @@ export const getCaseById = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    console.log(id)
-    const caseItem = await Case.findById(id)
+    console.log(id);
+    const caseItem = await Case.findById(id);
     if (!caseItem) {
       res.status(404).json({ success: false, message: "Case not found" });
       return;
@@ -152,10 +170,15 @@ export const updateCase = asyncHandler(async (req: Request, res: Response) => {
     createdBy: userId,
     attachments,
   };
-  const updatedCase = await Case.findByIdAndUpdate(id, updateData, {
+  const updatedCase: any = await Case.findByIdAndUpdate(id, updateData, {
     new: true,
   });
-
+  await addTimelineEvent(
+    updatedCase._id.toString(),
+    "Case Updated",
+    "The case was updated",
+    userId
+  );
   if (!updatedCase) {
     res.status(404).json({ success: false, message: "Case not found" });
     return;
@@ -171,6 +194,8 @@ export const deleteCase = async (
   try {
     const { id } = req.params;
     const deletedCase = await Case.findByIdAndDelete(id);
+    const { userId } = req.user;
+    await addTimelineEvent(id, "Case Deleted", "The case was deleted", userId);
     if (!deletedCase) {
       res.status(404).json({ success: false, message: "Case not found" });
       return;
