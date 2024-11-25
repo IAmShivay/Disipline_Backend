@@ -145,7 +145,11 @@ export const newEmployeeTemplate = (
 <body>
   <div class="container">
     <h1>Welcome to Our Company!</h1>
-    <p>Hello ${employeeDetails.name},</p>
+<p>Hello ${(
+  employeeDetails.firstName +
+  " " +
+  employeeDetails.lastName
+).toUpperCase()},</p>
     <p>We're excited to have you join our team. Your account has been created with the following details:</p>
     <ul>
       <li><strong>Email:</strong> ${employeeDetails.email}</li>
