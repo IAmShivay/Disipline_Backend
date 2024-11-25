@@ -108,7 +108,7 @@ export const getCasesByEmployeeAndRole = async (
       }
       cases = await Case.find({ employeeId });
 
-    } else if (role === "user") {
+    } else if (role === "admin" || role === "superadmin" || role === "manager" || role === "hr") {
       if (!userId) {
         return res.status(400).json({ success: false, message: "User ID missing" });
       }
