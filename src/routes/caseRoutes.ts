@@ -81,7 +81,7 @@ router.post(
 );
 
 // Get employee responses
-router.get("/employee-responses/:employeeId", getEmployeeResponses);
+router.get("/employee-responses/:id", getEmployeeResponses);
 
 // Get admin responses
 router.get("/admin-responses", requireAdmin, getAdminResponses);

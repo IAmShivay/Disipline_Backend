@@ -320,13 +320,13 @@ export const addAdminResponse = asyncHandler(
 
 export const getEmployeeResponses = asyncHandler(
   async (req: Request, res: Response) => {
-    const { employeeId } = req.params;
-
-    const cases = await Case.find({ employeeId })
-      .select("responses")
+    const { id: caseId } = req.params;
+    const cases = await Case.find({ _id: caseId })
+      .select("employeeResponse")
       .sort({ createdAt: -1 });
 
     res.json(cases);
+    console.log(cases);
   }
 );
 
