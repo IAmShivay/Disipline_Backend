@@ -30,6 +30,15 @@ export interface ICase extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+const attachmentSchema = new mongoose.Schema({
+  url: { type: String, required: true },
+  uploadedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  uploadedAt: { type: Date, default: Date.now },
+});
 
 const caseSchema = new Schema(
   {
@@ -60,14 +69,14 @@ const caseSchema = new Schema(
       {
         message: String,
         respondedBy: { type: Schema.Types.ObjectId, ref: "User" },
-        attachments: [String],
+        attachments: [attachmentSchema],
         createdAt: { type: Date, default: Date.now },
       },
     ],
     employeeResponse: [
       {
         message: String,
-        attachments: [String],
+        attachments: [attachmentSchema],
         createdAt: { type: Date, default: Date.now },
       },
     ],

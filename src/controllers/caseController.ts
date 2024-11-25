@@ -104,27 +104,36 @@ export const getCasesByEmployeeAndRole = async (
     // Check if the role is 'employee'
     if (role === "employee") {
       if (!employeeId) {
-        return res.status(400).json({ success: false, message: "Employee ID missing" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Employee ID missing" });
       }
       cases = await Case.find({ employeeId });
-
-    } else if (role === "admin" || role === "superadmin" || role === "manager" || role === "hr") {
+    } else if (
+      role === "admin" ||
+      role === "superadmin" ||
+      role === "manager" ||
+      role === "hr"
+    ) {
       if (!userId) {
-        return res.status(400).json({ success: false, message: "User ID missing" });
+        return res
+          .status(400)
+          .json({ success: false, message: "User ID missing" });
       }
       console.log(userId); // Still logging for debugging purposes
-      cases = await Case.find({createdBy: userId });
-      console.log(cases)
+      cases = await Case.find({ createdBy: userId });
+      console.log(cases);
     } else {
       res.status(400).json({ success: false, message: "Invalid role" });
       return;
     }
 
     res.status(200).json({ success: true, data: cases });
-    
   } catch (error) {
     console.error(error); // Log the error for debugging
-    res.status(500).json({ success: false, message: "Error fetching cases", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching cases", error });
   }
 };
 
@@ -244,8 +253,17 @@ export const addEmployeeResponse = asyncHandler(
 export const addAdminResponse = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { message, attachments } = req.body;
-    const respondedBy = req.user.id; // Assuming you have user information in the request
+    const { message } = req.body;
+    const files = req.files as Express.Multer.File[];
+    const attachments = await Promise.all(
+      files.map(async (file) => ({
+        url: await uploadFile(file),
+        uploadedBy: req.user.userId,
+        uploadedAt: new Date(),
+      }))
+    );
+    console.log(attachments)
+    const respondedBy = req.user.userId; // Assuming you have user information in the request
 
     const updatedCase = await Case.findByIdAndUpdate(
       id,
