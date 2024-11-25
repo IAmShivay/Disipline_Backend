@@ -10,7 +10,9 @@ import { generatePassword } from "../utils/autoGenratePassword";
 import { sendMail } from "../mailer/mailer";
 import { newEmployeeTemplate } from "../mailer/template";
 import dotenv from "dotenv";
+
 dotenv.config();
+
 export const createEmployee = asyncHandler(async (req: any, res: Response) => {
   const validatedData = createEmployeeSchema.parse(req.body);
   if (!req.user) {
@@ -36,6 +38,7 @@ export const createEmployee = asyncHandler(async (req: any, res: Response) => {
       mobile: employee.phone,
       fullName: "Default Name",
       companyName: companyName,
+      employeeId: employee._id,
     };
     await axios.post(`${process.env.AUTH_BASE_URL}/signup`, userPayload);
 

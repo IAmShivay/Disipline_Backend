@@ -96,15 +96,35 @@ export const getAllCasesByCompany = async (
 export const getCasesByEmployeeAndRole = async (
   req: Request,
   res: Response
-): Promise<void> => {
+): Promise<Response | undefined> => {
   try {
-    const { employeeId, role } = req.params;
-    const cases = await Case.find({ employeeId, role });
+    const { role, employeeId, userId } = req.user; // Destructure once
+    let cases;
+
+    // Check if the role is 'employee'
+    if (role === "employee") {
+      if (!employeeId) {
+        return res.status(400).json({ success: false, message: "Employee ID missing" });
+      }
+      cases = await Case.find({ employeeId });
+
+    } else if (role === "user") {
+      if (!userId) {
+        return res.status(400).json({ success: false, message: "User ID missing" });
+      }
+      console.log(userId); // Still logging for debugging purposes
+      cases = await Case.find({createdBy: userId });
+      console.log(cases)
+    } else {
+      res.status(400).json({ success: false, message: "Invalid role" });
+      return;
+    }
+
     res.status(200).json({ success: true, data: cases });
+    
   } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Error fetching cases", error });
+    console.error(error); // Log the error for debugging
+    res.status(500).json({ success: false, message: "Error fetching cases", error });
   }
 };
 
