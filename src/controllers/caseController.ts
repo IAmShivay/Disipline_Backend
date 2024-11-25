@@ -224,7 +224,25 @@ export const deleteCase = async (
 export const addEmployeeResponse = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { message, attachments } = req.body;
+    const { message } = req.body;
+    const files = req.files as Express.Multer.File[];
+    const attachments = await Promise.all(
+      files.map(async (file) => ({
+        url: await uploadFile(file),
+        uploadedBy: req.user.userId,
+        uploadedAt: new Date(),
+      }))
+    );
+    const existingResponse = await Case.findOne({
+      _id: id,
+      employeeResponse: { $exists: true, $not: { $size: 0 } },
+    });
+
+    if (existingResponse) {
+      res.status(400);
+      throw new Error("Response already exists for this case");
+    }
+    const respondedBy = req.user.userId;
 
     const updatedCase = await Case.findByIdAndUpdate(
       id,
@@ -232,6 +250,7 @@ export const addEmployeeResponse = asyncHandler(
         $push: {
           employeeResponse: {
             message,
+            respondedBy,
             attachments,
             createdAt: new Date(),
           },
@@ -262,7 +281,15 @@ export const addAdminResponse = asyncHandler(
         uploadedAt: new Date(),
       }))
     );
-    console.log(attachments)
+    const existingResponse = await Case.findOne({
+      _id: id,
+      adminResponses: { $exists: true, $not: { $size: 0 } },
+    });
+
+    if (existingResponse) {
+      res.status(400);
+      throw new Error("Response already exists for this case");
+    }
     const respondedBy = req.user.userId; // Assuming you have user information in the request
 
     const updatedCase = await Case.findByIdAndUpdate(
