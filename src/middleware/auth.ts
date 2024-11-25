@@ -19,7 +19,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
       throw new Error("Authentication required");
     }
     const verifyResponse = await axios.get(
-      "http://localhost:4000/api/auth/verify",
+      `${process.env.AUTH_BASE_URL}/verify`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     req.user = verifyResponse.data;

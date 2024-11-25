@@ -9,14 +9,21 @@ export interface ICase extends Document {
   title: string;
   incidentDate: Date;
   description: string;
-  attachments: {
+  attachments?: {
     url: string;
     uploadedBy: string;
     uploadedAt: Date;
   }[];
-  responses: Array<{
+  adminResponses?: Array<
+    {
+      message: string;
+      respondedBy: string;
+      attachments: string[];
+      createdAt: Date;
+    }[]
+  >;
+  employeeResponse?: Array<{
     message: string;
-    respondedBy: string;
     attachments: string[];
     createdAt: Date;
   }>;
@@ -49,10 +56,17 @@ const caseSchema = new Schema(
         uploadedAt: { type: Date, default: Date.now },
       },
     ],
-    responses: [
+    adminResponses: [
       {
         message: String,
-        respondedBy: { type: Schema.Types.ObjectId, ref: "Employee" },
+        respondedBy: { type: Schema.Types.ObjectId, ref: "User" },
+        attachments: [String],
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+    employeeResponse: [
+      {
+        message: String,
         attachments: [String],
         createdAt: { type: Date, default: Date.now },
       },

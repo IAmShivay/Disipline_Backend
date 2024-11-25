@@ -3,7 +3,8 @@ import asyncHandler from "express-async-handler";
 import { Case } from "../models/Case";
 import {
   createCaseSchema,
-  addResponseSchema,
+  // employeeResponseSchema,
+  // adminResponseSchema,
 } from "../validators/caseValidator";
 import { uploadFile } from "../utils/fileUpload";
 import TimelineEvent from "../models/Timeline";
@@ -55,38 +56,6 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
   res.status(201).json(newCase);
 });
 
-// Add a response to a case
-
-export const addResponse = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const validatedData = addResponseSchema.parse(req.body);
-  const files = req.files as Express.Multer.File[];
-
-  const attachments = await Promise.all(files.map((file) => uploadFile(file)));
-
-  const updatedCase = await Case.findByIdAndUpdate(
-    id,
-    {
-      $push: {
-        responses: {
-          ...validatedData,
-          // respondedBy: req.user.id,
-          attachments,
-          createdAt: new Date(),
-        },
-      },
-    },
-    { new: true }
-  );
-
-  if (!updatedCase) {
-    res.status(404);
-    throw new Error("Case not found");
-  }
-
-  res.json(updatedCase);
-});
-
 // Get all cases
 
 export const getCases = asyncHandler(async (req: Request, res: Response) => {
@@ -105,6 +74,8 @@ export const getCases = asyncHandler(async (req: Request, res: Response) => {
   res.json(cases);
 });
 
+// Get all cases by company
+
 export const getAllCasesByCompany = async (
   req: Request,
   res: Response
@@ -120,6 +91,8 @@ export const getAllCasesByCompany = async (
   }
 };
 
+// Get cases by employee and role
+
 export const getCasesByEmployeeAndRole = async (
   req: Request,
   res: Response
@@ -134,6 +107,8 @@ export const getCasesByEmployeeAndRole = async (
       .json({ success: false, message: "Error fetching cases", error });
   }
 };
+
+// Get Cases by id for a case
 
 export const getCaseById = async (
   req: Request,
@@ -154,6 +129,8 @@ export const getCaseById = async (
       .json({ success: false, message: "Error fetching case", error });
   }
 };
+
+// Update a case
 
 export const updateCase = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -188,6 +165,8 @@ export const updateCase = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({ success: true, data: updatedCase });
 });
 
+// Delete a case
+
 export const deleteCase = async (
   req: Request,
   res: Response
@@ -210,3 +189,94 @@ export const deleteCase = async (
       .json({ success: false, message: "Error deleting case", error });
   }
 };
+
+// Add response from employee
+
+export const addEmployeeResponse = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { message, attachments } = req.body;
+
+    const updatedCase = await Case.findByIdAndUpdate(
+      id,
+      {
+        $push: {
+          employeeResponse: {
+            message,
+            attachments,
+            createdAt: new Date(),
+          },
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedCase) {
+      res.status(404);
+      throw new Error("Case not found");
+    }
+
+    res.status(200).json(updatedCase);
+  }
+);
+
+// Add response from admin
+export const addAdminResponse = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { message, attachments } = req.body;
+    const respondedBy = req.user.id; // Assuming you have user information in the request
+
+    const updatedCase = await Case.findByIdAndUpdate(
+      id,
+      {
+        $push: {
+          adminResponses: {
+            message,
+            respondedBy,
+            attachments,
+            createdAt: new Date(),
+          },
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedCase) {
+      res.status(404);
+      throw new Error("Case not found");
+    }
+
+    res.status(200).json(updatedCase);
+  }
+);
+
+// Get responses for employee
+
+export const getEmployeeResponses = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { employeeId } = req.params;
+
+    const cases = await Case.find({ employeeId })
+      .select("responses")
+      .sort({ createdAt: -1 });
+
+    res.json(cases);
+  }
+);
+
+// Get responses for admin
+
+export const getAdminResponses = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { userId } = req.user;
+
+    const cases = await Case.find({
+      "responses.adminResponse.respondedBy": userId,
+    })
+      .select("responses")
+      .sort({ createdAt: -1 });
+
+    res.json(cases);
+  }
+);

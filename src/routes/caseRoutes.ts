@@ -4,16 +4,19 @@ import multer from "multer";
 import {
   createCase,
   getCases,
-  addResponse,
   getAllCasesByCompany,
   getCasesByEmployeeAndRole,
   getCaseById,
   updateCase,
   deleteCase,
+  addEmployeeResponse,
+  addAdminResponse,
+  getEmployeeResponses,
+  getAdminResponses,
 } from "../controllers/caseController";
 import { getTimelineEvents } from "../controllers/Timeline";
 // Importing authentication middleware
-import { auth } from "../middleware/auth";
+import { auth, requireAdmin } from "../middleware/auth";
 
 const router = express.Router(); // Create a new router instance
 const upload = multer({ storage: multer.memoryStorage() }); // Configure multer to store files in memory
@@ -27,8 +30,21 @@ router.post("/create/", upload.array("attachments"), createCase);
 // Route for retrieving all cases
 router.get("/get/", getCases);
 
-// Route for adding a response to a case with optional file attachments
-router.post("/:id/responses", upload.array("attachments"), addResponse);
+// Route for adding a response of admin to a case with optional file attachments
+
+router.post(
+  "/:id/admin-responses",
+  upload.array("attachments"),
+  addAdminResponse
+);
+
+// Route for adding a response of employee to a case with optional file attachments
+
+router.post(
+  "/:id/employee-responses",
+  upload.array("attachments"),
+  addEmployeeResponse
+);
 
 // Route for retrieving all cases associated with a specific company
 router.get("/company/:companyId", getAllCasesByCompany);
@@ -49,5 +65,25 @@ router.delete("/delete/:id", deleteCase);
 // Route for retrieving all timeline events for a specific case
 router.get("/timeline/:id", getTimelineEvents);
 
-// Export the router with all configured routes
+// Add employee response
+router.post(
+  "/:id/employee-response",
+  upload.array("attachments"),
+  addEmployeeResponse
+);
+
+// Add admin response
+router.post(
+  "/:id/admin-response",
+  requireAdmin,
+  upload.array("attachments"),
+  addAdminResponse
+);
+
+// Get employee responses
+router.get("/employee-responses/:employeeId", getEmployeeResponses);
+
+// Get admin responses
+router.get("/admin-responses", requireAdmin, getAdminResponses);
+
 export { router as caseRoutes };
