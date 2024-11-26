@@ -14,9 +14,7 @@ export const createEmployeeSchema = z.object({
     .refine((date) => !isNaN(date.getTime()), {
       message: "Invalid date format",
     }),
-  roleId: z.enum(["team_member", "team_leader", "manager", "employee"], {
-    message: "Invalid role ID",
-  }),
+  roleId: z.string().optional(), // Role ID is optional
   managerId: z.string().optional(), // Manager ID is optional
   status: z.enum(
     ["active", "inactive", "under_review,", "hold", "terminated"],

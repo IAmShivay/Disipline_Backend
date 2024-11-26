@@ -7,7 +7,7 @@ const router = express.Router();
 router.use(auth);
 
 router.post('/', createRole);
-router.get('/company/:companyId', getRoles);
+router.get('/roles', getRoles);
 router.patch('/:id', updateRole);
 
 export { router as roleRoutes };
