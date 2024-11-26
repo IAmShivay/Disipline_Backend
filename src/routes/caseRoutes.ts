@@ -13,6 +13,7 @@ import {
   addAdminResponse,
   getEmployeeResponses,
   getAdminResponses,
+  updateCaseStatus,
 } from "../controllers/caseController";
 import { getTimelineEvents } from "../controllers/Timeline";
 // Importing authentication middleware
@@ -82,7 +83,7 @@ router.post(
 
 // Get employee responses
 router.get("/employee-responses/:id", getEmployeeResponses);
-
+router.post("/status/:id", requireAdmin, updateCaseStatus);
 // Get admin responses
 router.get("/admin-responses", requireAdmin, getAdminResponses);
 

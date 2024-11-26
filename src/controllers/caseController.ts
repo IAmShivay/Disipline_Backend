@@ -345,3 +345,31 @@ export const getAdminResponses = asyncHandler(
     res.json(cases);
   }
 );
+export const updateCaseStatus = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const { userId } = req.user;
+
+  // Validate the status
+
+  const updatedCase = await Case.findByIdAndUpdate(
+    id,
+    { status },
+    { new: true, runValidators: true }
+  );
+
+  if (!updatedCase) {
+    res.status(404);
+    throw new Error('Case not found');
+  }
+
+  // Add a timeline event for the status update
+  await addTimelineEvent(
+    id,
+    'Case Status Updated',
+    `Case status was updated to ${status}`,
+    userId
+  );
+
+  res.status(200).json({ success: true, data: updatedCase });
+});

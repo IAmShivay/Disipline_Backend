@@ -36,7 +36,7 @@ export const requireAdmin = async (
   next: NextFunction
 ) => {
   try {
-    if (!req.user || req.user.role !== "admin") {
+    if (!req.user || req.user.role === "employee") {
       res.status(403);
       throw new Error("Admin access required");
     }

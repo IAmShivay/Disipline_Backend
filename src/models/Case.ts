@@ -5,7 +5,7 @@ export interface ICase extends Document {
   employeeName: string;
   createdBy: string;
   type: "performance" | "policy_violation" | "review";
-  status: "open" | "closed" | "in_progress";
+  status: "DRAFT" | "OPEN" | "PENDING_RESPONSE" | "UNDER_REVIEW" | "CLOSED";
   title: string;
   incidentDate: Date;
   description: string;
@@ -53,8 +53,8 @@ const caseSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["open", "closed", "in_progress"],
-      default: "open",
+      enum: ["OPEN", "PENDING_RESPONSE", "UNDER_REVIEW", "CLOSED"],
+      default: "OPEN",
     },
     title: { type: String, required: true },
     description: { type: String, required: true },
