@@ -14,6 +14,7 @@ export const createEmployeeSchema = z.object({
     .refine((date) => !isNaN(date.getTime()), {
       message: "Invalid date format",
     }),
+  role: z.string().min(1, { message: "Role is required" }),
   roleId: z.string().optional(), // Role ID is optional
   managerId: z.string().optional(), // Manager ID is optional
   status: z.enum(

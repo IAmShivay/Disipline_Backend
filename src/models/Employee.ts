@@ -8,11 +8,14 @@ export interface IEmployee extends Document {
   status: "active" | "under_review" | "hold" | "terminated";
   department: string;
   phone: string;
+  role: string;
   email: string;
   position: string;
   joinDate: Date;
   createdAt: Date;
   updatedAt: Date;
+  firstName?: string;
+  lastName?: string;
 }
 
 const employeeSchema = new Schema(
@@ -32,6 +35,7 @@ const employeeSchema = new Schema(
     department: { type: String, required: true },
     position: { type: String, required: true },
     joinDate: { type: Date, required: true },
+    role: { type: String, required: true },
   },
   { timestamps: true }
 );
