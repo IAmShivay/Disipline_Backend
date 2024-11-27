@@ -40,7 +40,7 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
     ...validatedData,
     createdBy: userId,
     attachments,
-    status: "open",
+    status: "OPEN",
     responses: [],
   };
   const newCase: any = await Case.create(caseData);
