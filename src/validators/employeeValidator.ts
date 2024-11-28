@@ -18,7 +18,7 @@ export const createEmployeeSchema = z.object({
   roleId: z.string().optional(), // Role ID is optional
   managerId: z.string().optional(), // Manager ID is optional
   status: z.enum(
-    ["active", "under_review", "hold,", "terminated"],
+    ["active", "under_review", "hold", "terminated"],
     { message: "Invalid status value" }
   ),
   companyId: z.string().optional(), // Company ID is optional
