@@ -35,7 +35,7 @@ const attachmentSchema = new mongoose.Schema({
   uploadedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    required: false,
   },
   uploadedAt: { type: Date, default: Date.now },
 });
@@ -67,16 +67,20 @@ const caseSchema = new Schema(
     adminResponses: [
       {
         message: String,
-        respondedBy: { type: Schema.Types.ObjectId, ref: "User" },
+        respondedBy: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+          required: false,
+        },
         attachments: [attachmentSchema],
-        createdAt: { type: Date, default: Date.now },
+        createdAt: { type: Date, default: Date.now, required: false },
       },
     ],
     employeeResponse: [
       {
-        message: String,
+        message: { type: String, required: false },
         attachments: [attachmentSchema],
-        createdAt: { type: Date, default: Date.now },
+        createdAt: { type: Date, default: Date.now, required: false },
       },
     ],
   },

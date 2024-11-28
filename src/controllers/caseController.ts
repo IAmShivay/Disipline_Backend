@@ -9,6 +9,7 @@ import {
 import { uploadFile } from "../utils/fileUpload";
 import TimelineEvent from "../models/Timeline";
 import mongoose from "mongoose";
+import { url } from "inspector";
 // Create a new Case
 const addTimelineEvent = async (
   caseId: string,
@@ -50,7 +51,7 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
   await addTimelineEvent(
     caseId,
     "Case Created",
-    "New case was created",
+    `New case was created by ${req.user.fullName}`,
     userId
   );
   res.status(201).json(newCase);
@@ -174,6 +175,8 @@ export const updateCase = asyncHandler(async (req: Request, res: Response) => {
   );
   const updateData = {
     ...req.body,
+    adminResponses: req.body.adminResponses || [],
+    employeeResponse: req.body.employeeResponse || [],
     createdBy: userId,
     attachments,
   };
@@ -183,7 +186,7 @@ export const updateCase = asyncHandler(async (req: Request, res: Response) => {
   await addTimelineEvent(
     updatedCase._id.toString(),
     "Case Updated",
-    "The case was updated",
+    `The case was updated by ${req.user.fullName}`,
     userId
   );
   if (!updatedCase) {
@@ -345,31 +348,33 @@ export const getAdminResponses = asyncHandler(
     res.json(cases);
   }
 );
-export const updateCaseStatus = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { status } = req.body;
-  const { userId } = req.user;
+export const updateCaseStatus = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    const { userId } = req.user;
 
-  // Validate the status
+    // Validate the status
 
-  const updatedCase = await Case.findByIdAndUpdate(
-    id,
-    { status },
-    { new: true, runValidators: true }
-  );
+    const updatedCase = await Case.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true, runValidators: true }
+    );
 
-  if (!updatedCase) {
-    res.status(404);
-    throw new Error('Case not found');
+    if (!updatedCase) {
+      res.status(404);
+      throw new Error("Case not found");
+    }
+
+    // Add a timeline event for the status update
+    await addTimelineEvent(
+      id,
+      "Case Status Updated",
+      `Case status was updated to ${status} by ${req.user.fullName}`,
+      userId
+    );
+
+    res.status(200).json({ success: true, data: updatedCase });
   }
-
-  // Add a timeline event for the status update
-  await addTimelineEvent(
-    id,
-    'Case Status Updated',
-    `Case status was updated to ${status}`,
-    userId
-  );
-
-  res.status(200).json({ success: true, data: updatedCase });
-});
+);
