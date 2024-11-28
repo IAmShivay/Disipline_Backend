@@ -47,6 +47,10 @@ const NotificationSchema: Schema = new Schema({
     type: String,
     required: true
   },
+  companyId: {
+    type: String,
+    required: true
+  },
   isRead: {
     type: Boolean,
     default: false

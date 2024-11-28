@@ -9,7 +9,8 @@ import {
 import { uploadFile } from "../utils/fileUpload";
 import TimelineEvent from "../models/Timeline";
 import mongoose from "mongoose";
-import { url } from "inspector";
+import Notification from "../models/notification";
+
 // Create a new Case
 const addTimelineEvent = async (
   caseId: string,
@@ -25,6 +26,31 @@ const addTimelineEvent = async (
   });
   await timelineEvent.save();
 };
+const addNotification = async (
+  type: string,
+  title: string,
+  caseId: string,
+  message: string,
+  employeeId: string,
+  userId: string,
+  createdAt: Date,
+  isRead: boolean,
+  companyId: string
+): Promise<void> => {
+  const notification = new Notification({
+    type,
+    title,
+    caseId,
+    message,
+    employeeId,
+    userId,
+    createdAt,
+    isRead,
+    companyId,
+  });
+  await notification.save();
+};
+
 export const createCase = asyncHandler(async (req: Request, res: Response) => {
   const validatedData = createCaseSchema.parse(req.body);
   const files = req.files as Express.Multer.File[];
@@ -44,6 +70,7 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
     status: "OPEN",
     responses: [],
   };
+  const companyId = req.user.companyId;
   const newCase: any = await Case.create(caseData);
   await newCase.populate("employeeId");
   await newCase.populate("createdBy");
@@ -53,6 +80,17 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
     "Case Created",
     `New case was created by ${req.user.fullName}`,
     userId
+  );
+  await addNotification(
+    "CASE_CREATED",
+    "New Disciplinary Case Created",
+    caseId,
+    `A new case "${newCase.type}" has been created for ${newCase.employeeId.fullName}.`,
+    newCase.employeeId,
+    userId,
+    new Date(),
+    false,
+    companyId
   );
   res.status(201).json(newCase);
 });
@@ -183,11 +221,24 @@ export const updateCase = asyncHandler(async (req: Request, res: Response) => {
   const updatedCase: any = await Case.findByIdAndUpdate(id, updateData, {
     new: true,
   });
+  const companyId = req.user.companyId;
+  console.log(companyId);
   await addTimelineEvent(
     updatedCase._id.toString(),
     "Case Updated",
     `The case was updated by ${req.user.fullName}`,
     userId
+  );
+  await addNotification(
+    "CASE_UPDATED",
+    "New Disciplinary Case Created",
+    updatedCase._id.toString(),
+    `A new case "${updatedCase.type}" has been created for ${updatedCase.fullName}.`,
+    updatedCase.employeeId,
+    userId,
+    new Date(),
+    false,
+    companyId
   );
   if (!updatedCase) {
     res.status(404).json({ success: false, message: "Case not found" });
@@ -208,6 +259,7 @@ export const deleteCase = async (
     const deletedCase = await Case.findByIdAndDelete(id);
     const { userId } = req.user;
     await addTimelineEvent(id, "Case Deleted", "The case was deleted", userId);
+
     if (!deletedCase) {
       res.status(404).json({ success: false, message: "Case not found" });
       return;
