@@ -163,10 +163,7 @@ export const newEmployeeTemplate = (
 </body>
 </html>
 `;
-export const warningLetterTemplate = (
-  employeeDetails: any,
-  issueDetails: any
-) => `
+export const warningLetterTemplate = (warningDetails: any) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -237,12 +234,11 @@ export const warningLetterTemplate = (
 <body>
   <div class="container">
     <h1>Warning Notice</h1>
-    <p>Dear ${employeeDetails.name},</p>
+    <p>Dear ${warningDetails.employeeName},</p>
     <p>This is to formally bring to your attention the following issue(s):</p>
     <ul>
-      <li><strong>Date:</strong> ${issueDetails.date}</li>
-      <li><strong>Issue:</strong> ${issueDetails.issue}</li>
-      <li><strong>Reported By:</strong> ${issueDetails.reportedBy}</li>
+      <li><strong>Date:</strong> ${warningDetails.incidentDate}</li>
+      <li><strong>Issue:</strong> ${warningDetails.description}</li>
     </ul>
     <p>Please take immediate steps to rectify this behavior. Continued issues may lead to further action, including termination.</p>
     <a href="#" class="acknowledge-btn">Acknowledge</a>

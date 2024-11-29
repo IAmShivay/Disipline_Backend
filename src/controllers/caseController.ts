@@ -10,7 +10,9 @@ import { uploadFile } from "../utils/fileUpload";
 import TimelineEvent from "../models/Timeline";
 import mongoose from "mongoose";
 import Notification from "../models/notification";
-
+import { sendMail } from "../mailer/mailer";
+import { Employee } from "../models/Employee";
+import { warningLetterTemplate } from "../mailer/template";
 // Create a new Case
 const addTimelineEvent = async (
   caseId: string,
@@ -75,6 +77,9 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
   await newCase.populate("employeeId");
   await newCase.populate("createdBy");
   const caseId = newCase._id.toString();
+  const Employe = await Employee.findById(newCase.employeeId);
+  const { email }: any = Employe;
+  console.log("email", email);
   await addTimelineEvent(
     caseId,
     "Case Created",
@@ -92,6 +97,7 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
     false,
     companyId
   );
+  await sendMail(email, "Case Has Been Registerd", warningLetterTemplate(newCase));
   res.status(201).json(newCase);
 });
 
