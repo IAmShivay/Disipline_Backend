@@ -14,7 +14,7 @@ export const getNotificationsByCompanyId = async (
 
     res.status(200).json({
       success: true,
-      count: notifications.length,
+      count: notifications?.length,
       data: notifications,
     });
   } catch (error) {
