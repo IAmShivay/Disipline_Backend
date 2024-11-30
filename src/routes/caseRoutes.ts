@@ -18,7 +18,7 @@ import {
 import { getTimelineEvents } from "../controllers/Timeline";
 // Importing authentication middleware
 import { auth, requireAdmin } from "../middleware/auth";
-import { getNotificationsByCompanyId } from "../controllers/notificaation";
+import { getNotificationsByCompanyId, markNotificationAsRead } from "../controllers/notificaation";
 const router = express.Router(); // Create a new router instance
 const upload = multer({ storage: multer.memoryStorage() }); // Configure multer to store files in memory
 
@@ -87,4 +87,6 @@ router.post("/status/:id", requireAdmin, updateCaseStatus);
 // Get admin responses
 router.get("/admin-responses", requireAdmin, getAdminResponses);
 router.get("/notifications", requireAdmin, getNotificationsByCompanyId);
+router.patch("/update-notifications/:id", requireAdmin, markNotificationAsRead);
+
 export { router as caseRoutes };

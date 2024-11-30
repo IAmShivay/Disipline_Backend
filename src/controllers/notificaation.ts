@@ -1,7 +1,10 @@
-import { Request, Response } from 'express';
-import Notification from '../models/notification';
+import { Request, Response } from "express";
+import Notification from "../models/notification";
 
-export const getNotificationsByCompanyId = async (req: Request, res: Response): Promise<void> => {
+export const getNotificationsByCompanyId = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { companyId } = req.user;
 
@@ -12,19 +15,22 @@ export const getNotificationsByCompanyId = async (req: Request, res: Response): 
     res.status(200).json({
       success: true,
       count: notifications.length,
-      data: notifications
+      data: notifications,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching notifications',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      message: "Error fetching notifications",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
-export const markNotificationAsRead = async (req: Request, res: Response): Promise<void> => {
+export const markNotificationAsRead = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const { notificationId } = req.params;
+    const { id: notificationId } = req.params;
     const { companyId } = req.user;
 
     const updatedNotification = await Notification.findOneAndUpdate(
@@ -36,20 +42,20 @@ export const markNotificationAsRead = async (req: Request, res: Response): Promi
     if (!updatedNotification) {
       res.status(404).json({
         success: false,
-        message: 'Notification not found or does not belong to the company'
+        message: "Notification not found or does not belong to the company",
       });
       return;
     }
 
     res.status(200).json({
       success: true,
-      data: updatedNotification
+      data: updatedNotification,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error updating notification',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      message: "Error updating notification",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
