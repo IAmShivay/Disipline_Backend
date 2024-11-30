@@ -59,3 +59,36 @@ export const markNotificationAsRead = async (
     });
   }
 };
+
+// export const markAllNotificationsAsRead = async (
+//   req: Request,
+//   res: Response
+// ): Promise<void> => {
+//   try {
+//     const { companyId, userId } = req.user;
+
+//     const result = await Notification.updateMany(
+//       { companyId, userId, isRead: false },
+//       { isRead: true }
+//     );
+
+//     if (result.modifiedCount === 0) {
+//       res.status(200).json({
+//         success: true,
+//         message: "No unread notifications found for the user",
+//       });
+//       return;
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       message: `Marked ${result.modifiedCount} notifications as read`,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: "Error marking all notifications as read",
+//       error: error instanceof Error ? error.message : "Unknown error",
+//     });
+//   }
+// };
