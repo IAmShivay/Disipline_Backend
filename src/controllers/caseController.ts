@@ -97,7 +97,11 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
     false,
     companyId
   );
-  await sendMail(email, "Case Has Been Registerd", warningLetterTemplate(newCase));
+  await sendMail(
+    email,
+    "Case Has Been Registerd",
+    warningLetterTemplate(newCase)
+  );
   res.status(201).json(newCase);
 });
 
@@ -158,7 +162,8 @@ export const getCasesByEmployeeAndRole = async (
       role === "admin" ||
       role === "superadmin" ||
       role === "manager" ||
-      role === "hr"
+      role === "hr" ||
+      role === "Company"
     ) {
       if (!userId) {
         return res
