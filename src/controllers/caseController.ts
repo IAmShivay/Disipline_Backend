@@ -415,29 +415,28 @@ export const updateCaseStatus = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body;
-    const { userId, email } = req.user;
+    const { userId } = req.user;
 
     // Validate the status
-
     const updatedCase = await Case.findByIdAndUpdate(
       id,
       { status },
       { new: true, runValidators: true }
     );
-
+    const employeeId = updatedCase?.employeeId;
+    const employee = await Employee.findById(employeeId);
     if (!updatedCase) {
       res.status(404);
       throw new Error("Case not found");
     }
-    if (updatedCase) {
+    console.log("updatedCase", updatedCase);  
+    if (employee?.email && updatedCase) {
       await sendMail(
-        email,
-        "Case Has Been Updated",
+        employee.email,
+        "Case Has Been Registerd",
         caseUpdatedTemplate(updatedCase)
       );
     }
-
-    // Add a timeline event for the status update
     await addTimelineEvent(
       id,
       "Case Status Updated",

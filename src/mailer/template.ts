@@ -899,11 +899,12 @@ export const caseUpdatedTemplate = (updatedCaseDetails: any) => `
     <p>Dear User,</p>
     <p>We wanted to inform you that your case has been updated. Below are the details:</p>
     <ul>
-      <li><strong>Case ID:</strong> ${updatedCaseDetails.caseId}</li>
-      <li><strong>Case Title:</strong> ${updatedCaseDetails.caseTitle}</li>
+      <li><strong>Case ID:</strong> ${updatedCaseDetails._id}</li>
+      <li><strong>Case Title:</strong> ${updatedCaseDetails.title}</li>
     </ul>
+    <p><strong>Update Details:</strong> ${updatedCaseDetails.status}</p>
     <p>To view more details or take further action, please visit the case management system by clicking the button below:</p>
-    <a href="/cases/${updatedCaseDetails.caseId}" class="login-btn">View Case</a>
+    <a href="/cases/${updatedCaseDetails._id}" class="login-btn">View Case</a>
   </div>
 </body>
 </html>
