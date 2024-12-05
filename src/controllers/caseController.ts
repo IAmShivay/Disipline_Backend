@@ -12,7 +12,7 @@ import mongoose from "mongoose";
 import Notification from "../models/notification";
 import { sendMail } from "../mailer/mailer";
 import { Employee } from "../models/Employee";
-import { warningLetterTemplate } from "../mailer/template";
+import { warningLetterTemplate, caseUpdatedTemplate } from "../mailer/template";
 // Create a new Case
 const addTimelineEvent = async (
   caseId: string,
@@ -415,7 +415,7 @@ export const updateCaseStatus = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body;
-    const { userId } = req.user;
+    const { userId, email } = req.user;
 
     // Validate the status
 
@@ -428,6 +428,13 @@ export const updateCaseStatus = asyncHandler(
     if (!updatedCase) {
       res.status(404);
       throw new Error("Case not found");
+    }
+    if (updatedCase) {
+      await sendMail(
+        email,
+        "Case Has Been Updated",
+        caseUpdatedTemplate(updatedCase)
+      );
     }
 
     // Add a timeline event for the status update
