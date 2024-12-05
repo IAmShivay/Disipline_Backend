@@ -90,7 +90,7 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
     "CASE_CREATED",
     "New Disciplinary Case Created",
     caseId,
-    `A new case "${newCase.type}" has been created for ${newCase.employeeName}.`,
+    `A new case "${newCase.type}" has been created by ${req.user.fullName}.`,
     newCase.employeeId,
     userId,
     new Date(),
@@ -429,7 +429,7 @@ export const updateCaseStatus = asyncHandler(
       res.status(404);
       throw new Error("Case not found");
     }
-    console.log("updatedCase", updatedCase);  
+    console.log("updatedCase", updatedCase);
     if (employee?.email && updatedCase) {
       await sendMail(
         employee.email,
