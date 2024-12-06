@@ -56,7 +56,7 @@ const addNotification = async (
 export const createCase = asyncHandler(async (req: Request, res: Response) => {
   const validatedData = createCaseSchema.parse(req.body);
   const files = req.files as Express.Multer.File[];
-  const { userId } = req.user;
+  const { companyId,userId } = req.user;
   const attachments = await Promise.all(
     files.map(async (file) => ({
       url: await uploadFile(file),
@@ -67,12 +67,12 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
   console.log(validatedData);
   const caseData = {
     ...validatedData,
-    createdBy: userId,
+    createdBy: companyId,
     attachments,
     status: "OPEN",
     responses: [],
   };
-  const companyId = req.user.companyId;
+  // const companyId = req.user.companyId;
   const newCase: any = await Case.create(caseData);
   await newCase.populate("employeeId");
   await newCase.populate("createdBy");
@@ -159,7 +159,7 @@ export const getCasesByEmployeeAndRole = async (
       }
       cases = await Case.find({ employeeId });
     } else if (
-      role === "Hr Manager" ||
+      role === "HR Manager" ||
       role === "Super Admin" ||
       role === "Editor" ||
       role === "hr" ||
@@ -171,7 +171,7 @@ export const getCasesByEmployeeAndRole = async (
           .json({ success: false, message: "User ID missing" });
       }
       console.log(userId); // Still logging for debugging purposes
-      cases = await Case.find({ createdBy: userId });
+      cases = await Case.find({ createdBy: companyId });
       console.log(cases);
     } else {
       res.status(400).json({ success: false, message: "Invalid role" });
