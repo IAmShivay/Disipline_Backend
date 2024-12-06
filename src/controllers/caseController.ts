@@ -147,7 +147,7 @@ export const getCasesByEmployeeAndRole = async (
   res: Response
 ): Promise<Response | undefined> => {
   try {
-    const { role, employeeId, userId } = req.user; // Destructure once
+    const { role, employeeId, companyId,userId } = req.user; // Destructure once
     let cases;
 
     // Check if the role is 'employee'
@@ -159,9 +159,9 @@ export const getCasesByEmployeeAndRole = async (
       }
       cases = await Case.find({ employeeId });
     } else if (
-      role === "admin" ||
-      role === "superadmin" ||
-      role === "manager" ||
+      role === "Hr Manager" ||
+      role === "Super Admin" ||
+      role === "Editor" ||
       role === "hr" ||
       role === "Company"
     ) {
