@@ -50,12 +50,12 @@ export const createEmployee = asyncHandler(async (req: any, res: Response) => {
     );
 
     res.status(201).json(employee);
-  } catch (error) {
-    console.error("Failed to create user:");
+  } catch (error: any) {
     await Employee.findByIdAndDelete(employee.id);
     res.status(500);
     throw new Error(
-      "Failed to create user account. Employee creation rolled back."
+      error.response.data.error ||
+        "Failed to create user account. Employee creation rolled back."
     );
   }
 });
