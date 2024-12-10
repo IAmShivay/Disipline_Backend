@@ -38,7 +38,7 @@ export const requireAdmin = async (
   try {
     if (!req.user || req.user.role === "employee") {
       res.status(403);
-      throw new Error("Admin access required");
+      throw new Error("Only Admin Can Chnge Status Of A Case");
     }
     next();
   } catch (error) {
