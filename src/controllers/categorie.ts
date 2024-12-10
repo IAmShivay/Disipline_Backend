@@ -13,7 +13,15 @@ export const categoryController = {
         companyId,
         userId,
       });
+      const existingCategory = await Category.findOne({
+        name: name,
+        companyId: companyId,
+      });
+      if (existingCategory) {
+        return res.status(400).json({ message: "Category already exists" });
+      }
       const savedCategory = await newCategory.save();
+
       res.status(201).json(savedCategory);
     } catch (error) {
       res.status(400).json({ message: "Error creating category", error });
@@ -23,20 +31,19 @@ export const categoryController = {
   // Get all categories
   getAll: async (req: Request, res: Response) => {
     try {
-        const { companyId } = req.user; // Extract companyId from the authenticated user
-        if (!companyId) {
-            return res.status(400).json({ message: "Company ID is required" });
-        }
+      const { companyId } = req.user; // Extract companyId from the authenticated user
+      if (!companyId) {
+        return res.status(400).json({ message: "Company ID is required" });
+      }
 
-        // Fetch categories that match the companyId
-        const categories = await Category.find({ companyId });
+      // Fetch categories that match the companyId
+      const categories = await Category.find({ companyId });
 
-        res.status(200).json(categories);
+      res.status(200).json(categories);
     } catch (error) {
-        res.status(400).json({ message: "Error fetching categories", error });
+      res.status(400).json({ message: "Error fetching categories", error });
     }
-},
-
+  },
 
   // Get a single category by ID
   getById: async (req: Request, res: Response) => {
