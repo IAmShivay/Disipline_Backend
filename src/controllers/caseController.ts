@@ -130,11 +130,15 @@ export const getAllCasesByCompany = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { companyId: createdBy } = req.user;
-    // console.log(companyId, "lo");
-    const cases = await Case.find({ createdBy });
-    console.log(cases);
-    res.status(200).json({ success: true, data: cases });
+    const { employeeId, role } = req.user;
+    if (role === "employee") {
+      const cases = await Case.find({ employeeId});
+      res.status(200).json({ success: true, data: cases });
+    } else {
+      const { companyId: createdBy } = req.user;
+      const cases = await Case.find({ createdBy });
+      res.status(200).json({ success: true, data: cases });
+    }
   } catch (error) {
     res
       .status(500)
