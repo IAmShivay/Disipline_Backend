@@ -51,7 +51,7 @@ router.post(
 router.get("/company/:companyId", getAllCasesByCompany);
 
 // Route for retrieving cases by an employee's ID and their role
-router.get("/employee", getCasesByEmployeeAndRole);
+router.get("/employee", getAllCasesByCompany);
 
 // Route for retrieving a specific case by its ID
 router.get("/caseId/:id", getCaseById);

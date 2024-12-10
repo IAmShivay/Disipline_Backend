@@ -56,7 +56,7 @@ const addNotification = async (
 export const createCase = asyncHandler(async (req: Request, res: Response) => {
   const validatedData = createCaseSchema.parse(req.body);
   const files = req.files as Express.Multer.File[];
-  const { companyId,userId } = req.user;
+  const { companyId, userId } = req.user;
   const attachments = await Promise.all(
     files.map(async (file) => ({
       url: await uploadFile(file),
@@ -130,8 +130,10 @@ export const getAllCasesByCompany = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { companyId } = req.params;
-    const cases = await Case.find({ companyId });
+    const { companyId: createdBy } = req.user;
+    // console.log(companyId, "lo");
+    const cases = await Case.find({ createdBy });
+    console.log(cases);
     res.status(200).json({ success: true, data: cases });
   } catch (error) {
     res
@@ -147,7 +149,7 @@ export const getCasesByEmployeeAndRole = async (
   res: Response
 ): Promise<Response | undefined> => {
   try {
-    const { role, employeeId, companyId,userId } = req.user; // Destructure once
+    const { role, employeeId, companyId, userId } = req.user; // Destructure once
     let cases;
 
     // Check if the role is 'employee'
@@ -213,7 +215,7 @@ export const getCaseById = async (
 
 export const updateCase = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { userId } = req.user;
+  const { companyId, userId } = req.user;
   const files = req.files as Express.Multer.File[];
   const attachments = await Promise.all(
     files.map(async (file) => ({
@@ -226,14 +228,12 @@ export const updateCase = asyncHandler(async (req: Request, res: Response) => {
     ...req.body,
     adminResponses: req.body.adminResponses || [],
     employeeResponse: req.body.employeeResponse || [],
-    createdBy: userId,
+    createdBy: companyId,
     attachments,
   };
   const updatedCase: any = await Case.findByIdAndUpdate(id, updateData, {
     new: true,
   });
-  const companyId = req.user.companyId;
-  console.log(companyId);
   await addTimelineEvent(
     updatedCase._id.toString(),
     "Case Updated",
