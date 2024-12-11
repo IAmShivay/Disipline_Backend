@@ -315,6 +315,28 @@ export const addEmployeeResponse = asyncHandler(
       res.status(401);
       throw new Error("You are not allowed to respond to this case");
     }
+    if (!casea) {
+      res.status(404);
+      throw new Error("Case not found");
+    }
+    if (
+      casea?.adminResponses &&
+      casea.adminResponses.length === 0 &&
+      casea.employeeResponse &&
+      casea.adminResponses.length < casea.employeeResponse.length
+    ) {
+      res.status(403);
+      throw new Error("You Can Only Reply After Admin Response");
+    }
+    if (
+      (casea?.adminResponses?.length || 0) <
+      (casea?.employeeResponse?.length || 0)
+    ) {
+      res.status(403);
+      throw new Error("You Can Only Reply After Admin Response");
+    }
+
+    console.log(casea?.adminResponses?.length, casea?.employeeResponse?.length);
     const respondedBy = req.user.userId;
 
     const updatedCase = await Case.findByIdAndUpdate(
