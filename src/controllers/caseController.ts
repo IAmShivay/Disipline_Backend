@@ -68,6 +68,7 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
   const caseData = {
     ...validatedData,
     createdBy: companyId,
+    initiatedBy: userId,
     attachments,
     status: "OPEN",
     responses: [],
@@ -295,6 +296,7 @@ export const addEmployeeResponse = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
     const { message } = req.body;
+    const { userId } = req.user;
     const files = req.files as Express.Multer.File[];
     const attachments = await Promise.all(
       files.map(async (file) => ({
@@ -303,15 +305,16 @@ export const addEmployeeResponse = asyncHandler(
         uploadedAt: new Date(),
       }))
     );
-    const existingResponse = await Case.findOne({
-      _id: id,
-      employeeResponse: { $exists: true, $not: { $size: 0 } },
-    });
+    const casea = await Case.findById(id);
 
-    // if (existingResponse) {
-    //   res.status(400);
-    //   throw new Error("Response already exists for this case");
-    // }
+    if (casea?.status === "CLOSED") {
+      res.status(403);
+      throw new Error("Case is closed. Employee cannot reply.");
+    }
+    if (userId !== casea?.employeeId) {
+      res.status(401);
+      throw new Error("You are not allowed to respond to this case");
+    }
     const respondedBy = req.user.userId;
 
     const updatedCase = await Case.findByIdAndUpdate(
@@ -343,6 +346,7 @@ export const addAdminResponse = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
     const { message } = req.body;
+    const { userId } = req.user;
     const files = req.files as Express.Multer.File[];
     const attachments = await Promise.all(
       files.map(async (file) => ({
@@ -351,21 +355,16 @@ export const addAdminResponse = asyncHandler(
         uploadedAt: new Date(),
       }))
     );
-    // const existingResponse = await Case.findOne({
-    //   _id: id,
-    //   adminResponses: { $exists: true, $not: { $size: 0 } },
-    // });
-
-    // if (existingResponse) {
-    //   res.status(400);
-    //   throw new Error("Response already exists for this case");
-    // }
     const casea = await Case.findById(id);
-    if (req.user.userId !== casea?.employeeId) {
+    if (userId !== casea?.initiatedBy) {
       res.status(401);
       throw new Error("You are not allowed to respond to this case");
     }
-    const respondedBy = req.user.userId; // Assuming you have user information in the request
+    if (casea?.status === "CLOSED") {
+      res.status(403);
+      throw new Error("Case is closed. Employee cannot reply.");
+    }
+    const respondedBy = userId; // Assuming you have user information in the request
     {
       const updatedCase = await Case.findByIdAndUpdate(
         id,

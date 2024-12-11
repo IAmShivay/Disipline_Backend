@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface ICase extends Document {
   employeeId: string;
   employeeName: string;
+  initiatedBy: string;
   createdBy: string;
   type: string;
   status: "DRAFT" | "OPEN" | "PENDING_RESPONSE" | "UNDER_REVIEW" | "CLOSED";
@@ -45,6 +46,7 @@ const caseSchema = new Schema(
     incidentDate: { type: Date, required: true },
     employeeName: { type: String, required: true },
     employeeId: { type: String, required: true },
+    initiatedBy: { type: String, required: true },
     createdBy: { type: String, required: true },
     type: {
       type: String,
