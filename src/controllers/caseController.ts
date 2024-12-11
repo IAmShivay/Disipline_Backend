@@ -296,7 +296,7 @@ export const addEmployeeResponse = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
     const { message } = req.body;
-    const { userId } = req.user;
+    const { employeeId } = req.user;
     const files = req.files as Express.Multer.File[];
     const attachments = await Promise.all(
       files.map(async (file) => ({
@@ -311,7 +311,7 @@ export const addEmployeeResponse = asyncHandler(
       res.status(403);
       throw new Error("Case is closed. Employee cannot reply.");
     }
-    if (userId !== casea?.employeeId) {
+    if (employeeId !== casea?.employeeId) {
       res.status(401);
       throw new Error("You are not allowed to respond to this case");
     }
