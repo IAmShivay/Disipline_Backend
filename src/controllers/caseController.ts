@@ -132,7 +132,7 @@ export const getAllCasesByCompany = async (
   try {
     const { employeeId, role } = req.user;
     if (role === "employee") {
-      const cases = await Case.find({ employeeId});
+      const cases = await Case.find({ employeeId });
       res.status(200).json({ success: true, data: cases });
     } else {
       const { companyId: createdBy } = req.user;
@@ -308,10 +308,10 @@ export const addEmployeeResponse = asyncHandler(
       employeeResponse: { $exists: true, $not: { $size: 0 } },
     });
 
-    if (existingResponse) {
-      res.status(400);
-      throw new Error("Response already exists for this case");
-    }
+    // if (existingResponse) {
+    //   res.status(400);
+    //   throw new Error("Response already exists for this case");
+    // }
     const respondedBy = req.user.userId;
 
     const updatedCase = await Case.findByIdAndUpdate(
@@ -351,38 +351,44 @@ export const addAdminResponse = asyncHandler(
         uploadedAt: new Date(),
       }))
     );
-    const existingResponse = await Case.findOne({
-      _id: id,
-      adminResponses: { $exists: true, $not: { $size: 0 } },
-    });
+    // const existingResponse = await Case.findOne({
+    //   _id: id,
+    //   adminResponses: { $exists: true, $not: { $size: 0 } },
+    // });
 
-    if (existingResponse) {
-      res.status(400);
-      throw new Error("Response already exists for this case");
+    // if (existingResponse) {
+    //   res.status(400);
+    //   throw new Error("Response already exists for this case");
+    // }
+    const casea = await Case.findById(id);
+    if (req.user.userId !== casea?.employeeId) {
+      res.status(401);
+      throw new Error("You are not allowed to respond to this case");
     }
     const respondedBy = req.user.userId; // Assuming you have user information in the request
-
-    const updatedCase = await Case.findByIdAndUpdate(
-      id,
-      {
-        $push: {
-          adminResponses: {
-            message,
-            respondedBy,
-            attachments,
-            createdAt: new Date(),
+    {
+      const updatedCase = await Case.findByIdAndUpdate(
+        id,
+        {
+          $push: {
+            adminResponses: {
+              message,
+              respondedBy,
+              attachments,
+              createdAt: new Date(),
+            },
           },
         },
-      },
-      { new: true }
-    );
+        { new: true }
+      );
 
-    if (!updatedCase) {
-      res.status(404);
-      throw new Error("Case not found");
+      if (!updatedCase) {
+        res.status(404);
+        throw new Error("Case not found");
+      }
+
+      res.status(200).json(updatedCase);
     }
-
-    res.status(200).json(updatedCase);
   }
 );
 
