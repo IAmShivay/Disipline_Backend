@@ -471,6 +471,16 @@ export const updateCaseStatus = asyncHandler(
     const { status } = req.body;
     const { userId } = req.user;
 
+    const casea = await Case.findById(id);
+    if (!casea) {
+      res.status(404);
+      throw new Error("Case not found");
+    }
+
+    if (casea.initiatedBy !== userId) {
+      res.status(401);
+      throw new Error("You are not allowed to update this case");
+    }
     // Validate the status
     const updatedCase = await Case.findByIdAndUpdate(
       id,
