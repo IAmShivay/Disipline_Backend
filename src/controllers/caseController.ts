@@ -12,7 +12,11 @@ import mongoose from "mongoose";
 import Notification from "../models/notification";
 import { sendMail } from "../mailer/mailer";
 import { Employee } from "../models/Employee";
-import { warningLetterTemplate, caseUpdatedTemplate } from "../mailer/template";
+import {
+  warningLetterTemplate,
+  caseUpdatedTemplate,
+  employeeResponseReceivedTemplate,
+} from "../mailer/template";
 // Create a new Case
 const addTimelineEvent = async (
   caseId: string,
@@ -430,7 +434,11 @@ export const addAdminResponse = asyncHandler(
         res.status(404);
         throw new Error("Case not found");
       }
-
+      // await sendMail(
+      //   email,
+      //   "Case Has Been Registerd",
+      //   employeeResponseReceivedTemplate(updatedCase)
+      // );
       res.status(200).json(updatedCase);
     }
   }
