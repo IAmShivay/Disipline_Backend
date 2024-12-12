@@ -477,7 +477,7 @@ export const updateCaseStatus = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body;
-    const { userId } = req.user;
+    const { userId, companyId } = req.user;
 
     const casea = await Case.findById(id);
     if (!casea) {
@@ -515,7 +515,17 @@ export const updateCaseStatus = asyncHandler(
       `Case status was updated to ${status} by ${req.user.fullName}`,
       userId
     );
-
+    await addNotification(
+      `${updatedCase?.type}`,
+      `Case Status ${status}`,
+      updatedCase?._id as string,
+      `Case Status was updated to ${status} for "${updatedCase?._id}" has been created.`,
+      updatedCase?.employeeId,
+      userId,
+      new Date(),
+      false,
+      companyId
+    );
     res.status(200).json({ success: true, data: updatedCase });
   }
 );
