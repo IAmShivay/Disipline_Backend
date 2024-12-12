@@ -16,6 +16,7 @@ import {
   warningLetterTemplate,
   caseUpdatedTemplate,
   employeeResponseReceivedTemplate,
+  adminsResponseReceivedTemplate 
 } from "../mailer/template";
 // Create a new Case
 const addTimelineEvent = async (
@@ -333,7 +334,7 @@ export const addEmployeeResponse = asyncHandler(
       }))
     );
     const casea = await Case.findById(id);
-
+    const employee = await Employee.findById(casea?.employeeId);
     if (casea?.status === "CLOSED") {
       res.status(403);
       throw new Error("Case is closed. Employee cannot reply.");
@@ -385,7 +386,11 @@ export const addEmployeeResponse = asyncHandler(
       res.status(404);
       throw new Error("Case not found");
     }
-
+    await sendMail(
+      employee?.email || "",
+      "You Have Received a Response",
+      adminsResponseReceivedTemplate (updatedCase)
+    );
     res.status(200).json(updatedCase);
   }
 );
@@ -405,6 +410,8 @@ export const addAdminResponse = asyncHandler(
       }))
     );
     const casea = await Case.findById(id);
+    const employee = await Employee.findById(casea?.employeeId);
+
     if (userId !== casea?.initiatedBy) {
       res.status(401);
       throw new Error("You are not allowed to respond to this case");
@@ -413,6 +420,7 @@ export const addAdminResponse = asyncHandler(
       res.status(403);
       throw new Error("Case is closed. Employee cannot reply.");
     }
+    console.log(casea);
     const respondedBy = userId; // Assuming you have user information in the request
     {
       const updatedCase = await Case.findByIdAndUpdate(
@@ -434,11 +442,11 @@ export const addAdminResponse = asyncHandler(
         res.status(404);
         throw new Error("Case not found");
       }
-      // await sendMail(
-      //   email,
-      //   "Case Has Been Registerd",
-      //   employeeResponseReceivedTemplate(updatedCase)
-      // );
+      await sendMail(
+        employee?.email || "",
+        "You Have Received a Response",
+        employeeResponseReceivedTemplate(updatedCase)
+      );
       res.status(200).json(updatedCase);
     }
   }

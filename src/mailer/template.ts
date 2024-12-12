@@ -1,7 +1,5 @@
-
 import dotenv from "dotenv";
 dotenv.config();
-
 
 export const newCaseTemplate = (caseDetails: any) => `
 <!DOCTYPE html>
@@ -914,7 +912,6 @@ export const caseUpdatedTemplate = (updatedCaseDetails: any) => `
 </html>
 `;
 
-
 export const adminResponseReceivedTemplate = (responseDetails: any) => `
 <!DOCTYPE html>
 <html lang="en">
@@ -1008,7 +1005,7 @@ export const adminResponseReceivedTemplate = (responseDetails: any) => `
 </html>
 `;
 
-export const employeeResponseReceivedTemplate = (responseDetails: any) => `
+export const employeeResponseReceivedTemplate = (updatedCase: any) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1089,13 +1086,99 @@ export const employeeResponseReceivedTemplate = (responseDetails: any) => `
     <p>Dear Employee,</p>
     <p>A new response has been submitted to one of your assigned cases. Below are the details:</p>
     <ul>
-      <li><strong>Case ID:</strong> ${responseDetails.caseId}</li>
-      <li><strong>Response ID:</strong> ${responseDetails.responseId}</li>
-      <li><strong>Submitted By:</strong> ${responseDetails.submitter}</li>
+      <li><strong>Case ID:</strong> ${updatedCase._id}</li>
     </ul>
-    <p><strong>Response Details:</strong> ${responseDetails.responseText}</p>
     <p>To view more details or take further action, please visit the case management system by clicking the button below:</p>
-    <a href="/responses/${responseDetails.responseId}" class="login-btn">View Response</a>
+    <a href="https://trackerhr.com/cases/${updatedCase._id}" class="login-btn">View Case</a>
+  </div>
+</body>
+</html>
+`;
+export const adminsResponseReceivedTemplate = (updatedCase: any) => `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @media only screen and (max-width: 600px) {
+      body { 
+        width: 100% !important; 
+        padding: 0 !important; 
+      }
+      .container { 
+        padding: 15px !important; 
+      }
+      .login-btn { 
+        width: 100% !important; 
+        font-size: 16px; 
+      }
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #2c3e50;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f7f9;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+    .container {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(59, 130, 246, 0.1);
+      padding: 30px;
+    }
+    h1 {
+      color: #3b82f6;
+      border-bottom: 3px solid #3b82f6;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    ul {
+      background-color: #f1f4f8;
+      border-left: 5px solid #3b82f6;
+      padding: 15px 15px 15px 30px;
+      border-radius: 4px;
+    }
+    li {
+      margin-bottom: 10px;
+      list-style-type: none;
+      color: #34495e;
+    }
+    li strong {
+      color: #3b82f6;
+      display: inline-block;
+      width: 150px;
+    }
+    .login-btn {
+      display: block;
+      background-color: #3b82f6;
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-top: 20px;
+      text-align: center;
+      width: 100%; 
+      max-width: 200px; 
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Response Received</h1>
+    <p>Dear Employee,</p>
+    <p>A new response has been submitted to one of your assigned cases. Below are the details:</p>
+    <ul>
+      <li><strong>Case ID:</strong> ${updatedCase._id}</li>
+    </ul>
+    <p>To view more details or take further action, please visit the case management system by clicking the button below:</p>
+    <a href="https://trackerhr.com/cases/${updatedCase._id}" class="login-btn">View Case</a>
   </div>
 </body>
 </html>
