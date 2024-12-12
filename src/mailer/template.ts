@@ -162,7 +162,7 @@ export const newEmployeeTemplate = (
 
     </ul>
     <p>Please log in to our system to complete your profile and get started.</p>
-    <a href="${process.env.FRONTEND_URL}/api/auth/login" class="login-btn">Log In</a>
+    <a href="${process.env.FRONTEND_URL}/login" class="login-btn">Log In</a>
   </div>
 </body>
 </html>
@@ -245,7 +245,7 @@ export const warningLetterTemplate = (warningDetails: any) => `
       <li><strong>Issue:</strong> ${warningDetails.description}</li>
     </ul>
     <p>Please take immediate steps to rectify this behavior. Continued issues may lead to further action, including termination.</p>
-    <a href="${process.env.FRONTEND_URL}/api/auth/login" class="acknowledge-btn">Acknowledge</a>
+    <a href="${process.env.FRONTEND_URL}/login" class="acknowledge-btn">Acknowledge</a>
   </div>
 </body>
 </html>
