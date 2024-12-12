@@ -229,6 +229,29 @@ export const updateCase = asyncHandler(async (req: Request, res: Response) => {
       uploadedAt: new Date(),
     }))
   );
+  const casea = await Case.findById(id);
+  if (!casea) {
+    res.status(404);
+    throw new Error("Case not found");
+  }
+  if (casea.status === "CLOSED") {
+    res.status(403);
+    throw new Error("Case is closed. Cannot update");
+  }
+  if (casea.initiatedBy !== userId) {
+    res.status(401);
+    throw new Error("You are not allowed to update this case");
+  }
+  if (
+    casea.adminResponses &&
+    casea.adminResponses.length > 0 &&
+    casea.employeeResponse &&
+    casea.employeeResponse.length > 0
+  ) {
+    res.status(403);
+    throw new Error("Once Communication Started Case Cannot be Updated.");
+  }
+
   const updateData = {
     ...req.body,
     adminResponses: req.body.adminResponses || [],
