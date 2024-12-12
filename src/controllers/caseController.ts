@@ -274,7 +274,7 @@ export const updateCase = asyncHandler(async (req: Request, res: Response) => {
   );
   await addNotification(
     "CASE_UPDATED",
-    "New Disciplinary Case Created",
+    "Case Was Updated",
     updatedCase._id.toString(),
     `A new case "${updatedCase.type}" has been created.`,
     updatedCase.employeeId,
@@ -516,10 +516,10 @@ export const updateCaseStatus = asyncHandler(
       userId
     );
     await addNotification(
-      `${updatedCase?.type}`,
+      `CASE_UPDATED`,
       `Case Status ${status}`,
       updatedCase?._id as string,
-      `Case Status was updated to ${status} for "${updatedCase?._id}" has been created.`,
+      `Case Status was updated to ${status} for ${updatedCase?._id}.`,
       updatedCase?.employeeId,
       userId,
       new Date(),
