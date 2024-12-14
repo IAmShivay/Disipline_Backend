@@ -96,7 +96,9 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
     "CASE_CREATED",
     "New Disciplinary Case Created",
     caseId,
-    `A new case "${newCase.type}" has been created by ${req.user.fullName} .`,
+    `A new case "${newCase.type}" has been created by ${
+      req.user.fullName
+    } against ${Employe?.firstName + " " + Employe?.lastName}.`,
     newCase.employeeId,
     userId,
     new Date(),
@@ -256,6 +258,7 @@ export const updateCase = asyncHandler(async (req: Request, res: Response) => {
     res.status(403);
     throw new Error("Once Communication Started Case Cannot be Updated.");
   }
+  const employe = await Employee.findById(casea?.employeeId);
 
   const updateData = {
     ...req.body,
@@ -277,7 +280,9 @@ export const updateCase = asyncHandler(async (req: Request, res: Response) => {
     "CASE_UPDATED",
     ` Case Was Updated by ${req.user.fullName} `,
     updatedCase._id.toString(),
-    `Case ${updatedCase.type} has been Updated.`,
+    `Case ${updatedCase.type} has been Updated by ${
+      req?.user?.fullName
+    } Against Employee ${employe?.firstName + " " + employe?.lastName} .`,
     updatedCase.employeeId,
     userId,
     new Date(),
@@ -481,6 +486,7 @@ export const getAdminResponses = asyncHandler(
     res.json(cases);
   }
 );
+
 export const updateCaseStatus = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -527,7 +533,9 @@ export const updateCaseStatus = asyncHandler(
       `CASE_UPDATED`,
       `Case Status ${status}`,
       updatedCase?._id as string,
-      `Case Status was updated to ${status} by ${req.user.fullName}.`,
+      `Case Status was updated to ${status} by ${
+        req.user.fullName
+      } against Case ${employee?.firstName + " " + employee?.lastName}.`,
       updatedCase?.employeeId,
       userId,
       new Date(),
