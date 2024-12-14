@@ -16,7 +16,7 @@ import {
   warningLetterTemplate,
   caseUpdatedTemplate,
   employeeResponseReceivedTemplate,
-  adminsResponseReceivedTemplate 
+  adminsResponseReceivedTemplate,
 } from "../mailer/template";
 // Create a new Case
 const addTimelineEvent = async (
@@ -96,7 +96,7 @@ export const createCase = asyncHandler(async (req: Request, res: Response) => {
     "CASE_CREATED",
     "New Disciplinary Case Created",
     caseId,
-    `A new case "${newCase.type}" has been created.`,
+    `A new case "${newCase.type}" has been created by ${req.user.fullName} .`,
     newCase.employeeId,
     userId,
     new Date(),
@@ -275,9 +275,9 @@ export const updateCase = asyncHandler(async (req: Request, res: Response) => {
   );
   await addNotification(
     "CASE_UPDATED",
-    "Case Was Updated",
+    ` Case Was Updated by ${req.user.fullName} `,
     updatedCase._id.toString(),
-    `A new case "${updatedCase.type}" has been created.`,
+    `Case ${updatedCase.type} has been Updated.`,
     updatedCase.employeeId,
     userId,
     new Date(),
@@ -389,7 +389,7 @@ export const addEmployeeResponse = asyncHandler(
     await sendMail(
       employee?.email || "",
       "You Have Received a Response",
-      adminsResponseReceivedTemplate (updatedCase)
+      adminsResponseReceivedTemplate(updatedCase)
     );
     res.status(200).json(updatedCase);
   }
@@ -527,7 +527,7 @@ export const updateCaseStatus = asyncHandler(
       `CASE_UPDATED`,
       `Case Status ${status}`,
       updatedCase?._id as string,
-      `Case Status was updated to ${status} for ${updatedCase?._id}.`,
+      `Case Status was updated to ${status} by ${req.user.fullName}.`,
       updatedCase?.employeeId,
       userId,
       new Date(),
